@@ -1,9 +1,9 @@
 import React from 'react'
-import ChatBotStart from './components/ChatBotStart'
+import ChatBotStart from './components/chat-bot-start'
 
 const App = () => {
   return (
-    <div>
+    <div className="container">
       <ChatBotStart />
     </div>
   )
