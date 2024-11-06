@@ -150,7 +150,6 @@ const ChatBotApp = ({handleGoBack, chats, setChats, activeChat, setActiveChat, c
                 placeholder="Type a message..."
                 value={inputValue}
                 onChange={handleInputChange}
-                onFocus={() => setShowEmojis(false)}
                 />
               <i className="fa-solid fa-paper-plane" onClick={sendMessage}></i>
             </form>
