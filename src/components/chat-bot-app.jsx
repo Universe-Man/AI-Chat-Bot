@@ -1,11 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import '../styles/chat-bot-app.css';
 import config from '../../config.json';
+import Picker from '@emoji-mart/react';
+import data from '@emoji-mart/data';
 
 const ChatBotApp = ({handleGoBack, chats, setChats, activeChat, setActiveChat, createNewChat}) => {
   const [inputValue, setInputValue] = useState("");
   const [messages, setMessages] = useState(chats[0]?.messages || []);
   const [isTyping, setIsTyping] = useState(false);
+  const [showEmojis, setShowEmojis] = useState(false);
   const chatEndRef = useRef(null);
 
   useEffect(() => {
@@ -15,10 +18,14 @@ const ChatBotApp = ({handleGoBack, chats, setChats, activeChat, setActiveChat, c
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({behavior: "smooth"})
-  }, [messages])
+  }, [messages]);
 
   const handleInputChange = (e) => {
     setInputValue(e.target.value);
+  };
+
+  const handleEmojiSelect = (emoji) => {
+    setInputValue((prevInput) => prevInput + emoji.native)
   };
 
   const sendMessage = async () => {
@@ -128,13 +135,22 @@ const ChatBotApp = ({handleGoBack, chats, setChats, activeChat, setActiveChat, c
             {isTyping && <div className="typing">Typing...</div>}
             <div ref={chatEndRef} />
             <form className="msg-form" action="" onSubmit={handleFormSubmit}>
-              <i className="fa-solid fa-face-smile emoji"></i>
+              <i className="fa-solid fa-face-smile emoji" onClick={(e) => {
+                e.stopPropagation();
+                setShowEmojis((prev) => !prev);
+              }}></i>
+              {showEmojis && (
+                <div className="emoji-picker">
+                  <Picker data={data} onEmojiSelect={handleEmojiSelect} theme="dark" onClickOutside={() => setShowEmojis(false)} />
+                </div>
+              )}
               <input
                 type="text"
                 className="msg-input"
                 placeholder="Type a message..."
                 value={inputValue}
                 onChange={handleInputChange}
+                onFocus={() => setShowEmojis(false)}
                 />
               <i className="fa-solid fa-paper-plane" onClick={sendMessage}></i>
             </form>
