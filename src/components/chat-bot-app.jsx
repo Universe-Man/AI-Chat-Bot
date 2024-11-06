@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/chat-bot-app.css';
+import config from '../../config.json';
 
 const ChatBotApp = ({handleGoBack, chats, setChats, activeChat, setActiveChat, createNewChat}) => {
   const [inputValue, setInputValue] = useState("");
   const [messages, setMessages] = useState(chats[0]?.messages || []);
+  const [isTyping, setIsTyping] = useState(false);
 
   useEffect(() => {
     const activeChatObj = chats.find((chat) => chat.id === activeChat)
@@ -14,7 +16,7 @@ const ChatBotApp = ({handleGoBack, chats, setChats, activeChat, setActiveChat, c
     setInputValue(e.target.value);
   };
 
-  const sendMessage = () => {
+  const sendMessage = async () => {
     if (inputValue.trim === "") return;
     const newMessage = {
       type: "prompt",
@@ -35,6 +37,38 @@ const ChatBotApp = ({handleGoBack, chats, setChats, activeChat, setActiveChat, c
         return chat;
       });
       setChats(updatedChats);
+      setIsTyping(true);
+      const response = await fetch(config.OPEN_AI_API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${config.OPEN_AI_API_KEY}`
+        },
+        body: JSON.stringify({
+          model: "gpt-4o-mini",
+          messages: [{role: "user", content: inputValue}],
+          max_tokens: 500,
+        }),
+      });
+
+      const data = await response.json();
+      const chatResponse = data.choices[0].message.content.trim();
+
+      const newResponse = {
+        type: "response",
+        text: chatResponse,
+        timestamp: new Date().toLocaleTimeString(),
+      };
+      const updatedMessagesWithResponse = [...updatedMessages, newResponse];
+      setMessages(updatedMessagesWithResponse);
+      setIsTyping(false);
+      const updateChatsWithResponse = chats.map((chat) => {
+        if (chat.id === activeChat) {
+          return { ...chat, messages: updatedMessagesWithResponse }
+        };
+        return chat;
+      });
+      setChats(updateChatsWithResponse);
     };
   };
 
@@ -85,18 +119,20 @@ const ChatBotApp = ({handleGoBack, chats, setChats, activeChat, setActiveChat, c
               {msg.text} <span>{msg.timestamp}</span>
             </div>
           ))}
-          <div className="typing">Typing...</div>
-          <form className="msg-form" action="" onSubmit={handleFormSubmit}>
-            <i className="fa-solid fa-face-smile emoji"></i>
-            <input
-              type="text"
-              className="msg-input"
-              placeholder="Type a message..."
-              value={inputValue}
-              onChange={handleInputChange}
-            />
-            <i className="fa-solid fa-paper-plane" onClick={sendMessage}></i>
-          </form>
+          <div className="msg-form-wrapper">
+            {isTyping && <div className="typing">Typing...</div>}
+            <form className="msg-form" action="" onSubmit={handleFormSubmit}>
+              <i className="fa-solid fa-face-smile emoji"></i>
+              <input
+                type="text"
+                className="msg-input"
+                placeholder="Type a message..."
+                value={inputValue}
+                onChange={handleInputChange}
+                />
+              <i className="fa-solid fa-paper-plane" onClick={sendMessage}></i>
+            </form>
+          </div>
         </div>
       </div>
     </div>

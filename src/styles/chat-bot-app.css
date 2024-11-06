@@ -5,7 +5,7 @@
 }
 
 .chat-list {
-  width: 50%;
+  width: 25%;
   height: 100%;
   background-color: #0d111a;
   padding: 1rem;
@@ -67,7 +67,7 @@
 }
 
 .chat-window {
-  width: 70%;
+  width: 75%;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -105,6 +105,13 @@
   display: flex;
   flex-direction: column;
   row-gap: 4rem;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.chat::-webkit-scrollbar {
+  display: none;
 }
 
 .prompt, .response {
@@ -136,11 +143,15 @@
   margin-top: 0.5rem;
 }
 
+.msg-form-wrapper {
+  margin-top: auto;
+}
+
 .typing {
   font-family: "Exo 2", sans-serif;
   font-size: 1.6rem;
   color: #7b8ebc;
-  margin-top: auto;
+  margin-bottom: 1rem;
 }
 
 .msg-form {
