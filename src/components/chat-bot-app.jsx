@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import '../styles/chat-bot-app.css';
-import config from '../../config.json';
 import Picker from '@emoji-mart/react';
 import data from '@emoji-mart/data';
 
@@ -60,11 +59,11 @@ const ChatBotApp = ({handleGoBack, chats, setChats, activeChat, setActiveChat, c
       setChats(updatedChats);
       localStorage.setItem("chats", JSON.stringify(updatedChats));
       setIsTyping(true);
-      const response = await fetch(config.OPEN_AI_API_URL, {
+      const response = await fetch(import.meta.env.VITE_OPEN_AI_API_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${config.OPEN_AI_API_KEY}`
+          "Authorization": `Bearer ${import.meta.env.VITE_OPEN_AI_API_KEY}`
         },
         body: JSON.stringify({
           model: "gpt-4o-mini",

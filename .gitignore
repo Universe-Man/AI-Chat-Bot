@@ -1,4 +1,4 @@
-config.json
+.env
 
 # config.json way or .env with dotenv
 
