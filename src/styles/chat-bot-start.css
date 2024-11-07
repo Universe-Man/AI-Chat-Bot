@@ -26,3 +26,15 @@
 .start-page-btn:active {
   transform: scale(0.98);
 }
+
+footer {
+  position: absolute;
+  bottom: 5rem;
+  font-size: 2rem;
+  color: #eee;
+}
+
+footer a {
+  color: #a2d4f5;
+  text-decoration: none;
+}

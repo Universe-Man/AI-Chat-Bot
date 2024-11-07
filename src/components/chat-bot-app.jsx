@@ -9,6 +9,7 @@ const ChatBotApp = ({handleGoBack, chats, setChats, activeChat, setActiveChat, c
   const [messages, setMessages] = useState(chats[0]?.messages || []);
   const [isTyping, setIsTyping] = useState(false);
   const [showEmojis, setShowEmojis] = useState(false);
+  const [showChatList, setShowChatList] = useState(false);
   const chatEndRef = useRef(null);
 
   useEffect(() => {
@@ -19,6 +20,13 @@ const ChatBotApp = ({handleGoBack, chats, setChats, activeChat, setActiveChat, c
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({behavior: "smooth"})
   }, [messages]);
+
+  useEffect(() => {
+    if (activeChat) {
+      const storedMessages = JSON.parse(localStorage.getItem(activeChat)) || [];
+      setMessages(storedMessages);
+    };
+  }, [activeChat]);
 
   const handleInputChange = (e) => {
     setInputValue(e.target.value);
@@ -41,6 +49,7 @@ const ChatBotApp = ({handleGoBack, chats, setChats, activeChat, setActiveChat, c
     } else {
       const updatedMessages = [...messages, newMessage];
       setMessages(updatedMessages);
+      localStorage.setItem(activeChat, JSON.stringify(updatedMessages));
       setInputValue("");
       const updatedChats = chats.map((chat) => {
         if (chat.id === activeChat) {
@@ -49,6 +58,7 @@ const ChatBotApp = ({handleGoBack, chats, setChats, activeChat, setActiveChat, c
         return chat;
       });
       setChats(updatedChats);
+      localStorage.setItem("chats", JSON.stringify(updatedChats));
       setIsTyping(true);
       const response = await fetch(config.OPEN_AI_API_URL, {
         method: "POST",
@@ -73,14 +83,16 @@ const ChatBotApp = ({handleGoBack, chats, setChats, activeChat, setActiveChat, c
       };
       const updatedMessagesWithResponse = [...updatedMessages, newResponse];
       setMessages(updatedMessagesWithResponse);
+      localStorage.setItem(activeChat, JSON.stringify(updatedMessagesWithResponse));
       setIsTyping(false);
-      const updateChatsWithResponse = chats.map((chat) => {
+      const updatedChatsWithResponse = chats.map((chat) => {
         if (chat.id === activeChat) {
           return { ...chat, messages: updatedMessagesWithResponse }
         };
         return chat;
       });
-      setChats(updateChatsWithResponse);
+      setChats(updatedChatsWithResponse);
+      localStorage.setItem("chats", JSON.stringify(updatedChatsWithResponse));
     };
   };
 
@@ -96,6 +108,8 @@ const ChatBotApp = ({handleGoBack, chats, setChats, activeChat, setActiveChat, c
   const handleDeleteChat = (id) => {
     const updatedChats = chats.filter((chat) => chat.id !== id);
     setChats(updatedChats);
+    localStorage.setItem("chats", JSON.stringify(updatedChats));
+    localStorage.removeItem(id);
     if (id === activeChat) {
       const newActiveChat = updatedChats.length > 0 ? updatedChats[0].id : null;
       setActiveChat(newActiveChat);
@@ -104,10 +118,11 @@ const ChatBotApp = ({handleGoBack, chats, setChats, activeChat, setActiveChat, c
 
   return (
     <div className="chat-app">
-      <div className="chat-list">
+      <div className={`chat-list ${showChatList && "show"}`}>
         <div className="chat-list-header">
           <h2>Chat List</h2>
           <i className="bx bx-edit-alt new-chat" onClick={() => createNewChat()}></i>
+          <i className="bx bx-x-circle close-list" onClick={() => setShowChatList(false)}></i>
         </div>
         {chats.map((chat) => (
           <div key={chat.id} className={`chat-list-item ${chat.id === activeChat ? "active" : ""}`} onClick={() => handleSelectChat(chat.id)}>
@@ -123,6 +138,7 @@ const ChatBotApp = ({handleGoBack, chats, setChats, activeChat, setActiveChat, c
       <div className="chat-window">
         <div className="chat-title">
           <h3>Chat with AI</h3>
+          <i className="bx bx-menu" onClick={() => setShowChatList(true)}></i>
           <i className="bx bx-arrow-back arrow" onClick={handleGoBack}></i>
         </div>
         <div className="chat">

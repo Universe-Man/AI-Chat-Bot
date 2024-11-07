@@ -91,6 +91,10 @@
   letter-spacing: 0.1rem;
 }
 
+.close-list {
+  display: none;
+}
+
 .arrow {
   font-size: 4rem;
   color: #7b8ebc;
@@ -200,4 +204,61 @@
 
 .msg-input:focus::placeholder {
   opacity: 0;
+}
+
+@media (max-width: 900px) {
+  .chat-app {
+    flex-direction: column;
+  }
+
+  .chat-list {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 40%;
+    height: 100%;
+    /* transform: translateX(-100%); */
+    display: none;
+    z-index: 1;
+  }
+
+  .chat-list.show {
+    /* transform: translateX(0); */
+    display: block;
+  }
+
+  .chat-window {
+    width: 100%;
+  }
+
+  .chat-title h3 {
+    padding-left: 6rem;
+  }
+
+  .chat-title i.bx-menu {
+    font-size: 3rem;
+    color: #fff;
+    display: block;
+    cursor: pointer;
+    position: absolute;
+    left: 1rem;
+  }
+
+  .close-list {
+    display: inline-block;
+  }
+}
+
+@media (max-width: 500px) {
+  .chat-list {
+    width: 60%;
+  }
+
+  .msg-input {
+    width: 100%;
+  }
+
+  .emoji-picker {
+    left: 1rem;
+  }
 }
