@@ -1,6 +1,6 @@
 Welcome to AI Chat Bot!
 
-To run locally, run "npm run dev" in your terminal.
+To run locally, run "npm install" and then "npm run dev" in your terminal.
 
 You can find the project running at http://localhost:3000 in the browser of your choice.
 
